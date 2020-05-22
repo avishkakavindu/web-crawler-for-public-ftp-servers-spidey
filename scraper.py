@@ -7,8 +7,8 @@ ctx = ssl.create_default_context()
 ctx.check_hostname = False
 ctx.verify_mode = ssl.CERT_NONE
 
-url: str = "http://185.105.103.101/serial/12.Monkeys/"
-# url = input('Enter target Url: ')
+#url: str = "http://185.105.103.101/serial/McMafia/"
+url = input('Enter target Url: ').strip()
 count: int = 0
 
 fileTypes = (
@@ -64,30 +64,43 @@ for val in seasons.values():    # iterate through the selected seasons
     # get <a> in the page
     tags = getlinks(tmpUrl)
 
+    print('For season - {}'.format(val.strip('/')))
+
+    tmpQuality = []
     # request quality
     for tag in tags:
-        tmpQuality = []
         link = tag.get('href', None)
         if link == '../':
             continue
         count += 1
-        print('For season - {}'.format(val.strip('/')))
+
         tmpQuality.append(link)     # list of available quality
         print('\t({}) - Video Quality - {}'.format(count, link.strip('/')))
 
-        # get input for video quality
-        while True:
-            try:
-                reqQuality = int(input("Please select Video Quality you want(1 or 2 or...): "))
-            except ValueError:
-                print('Invalid Input!')
-            else:
-                # correct int value ?
-                if len(tmpQuality) >= reqQuality > 0:
-                    quality[val] = tmpQuality[reqQuality - 1]
-                    break
+    # get input for video quality
+    while True:
+        try:
+            reqQuality = int(input("Please select Video Quality you want(1 or 2 or...): "))
+        except ValueError:
+            print('Invalid Input!')
+        else:
+            # correct int value ?
+            if len(tmpQuality) >= reqQuality > 0:
+                quality[val] = tmpQuality[reqQuality - 1]
+                tmpQuality = []
+                break
+
+for s, q in quality.items():                # s - season, q - quality
+    tmpUrl = url + s + q
+    tags = getlinks(tmpUrl)
+
+    for tag in tags:
+        if tag.get('href', None) == '../':
+            continue
+        writelinks(tmpUrl, tag.get('href', None))
+
 
 # quality selection completed
-print("you selected", quality )
+print("All links scraped succesfully!")
 
 
