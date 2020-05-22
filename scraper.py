@@ -2,14 +2,25 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup as bs
 import ssl
 
+
+# --- return soup object of url ---
+def getlinks(cUrl):
+    html = urlopen(cUrl, context=ctx).read()
+    soup = bs(html, "html.parser")
+    return soup('a')
+
+
+# --- writes scraped linked into txt file ---
+def writelinks(parent, link):
+    f = open("links.txt", "a")
+    f.write(parent + link + "\n")
+    f.close()
+
+
 # Ignore ssl certificate errors
 ctx = ssl.create_default_context()
 ctx.check_hostname = False
 ctx.verify_mode = ssl.CERT_NONE
-
-#url: str = "http://185.105.103.101/serial/McMafia/"
-url = input('Enter target Url: ').strip()
-count: int = 0
 
 fileTypes = (
     '.webm', '.mkv', '.flv', '.avi', '.mov', '.wmv', '.mp4', '.mp4p', '.mp4v', '.mpg', '.mpef', '.mpv', '.mpeg', '.flv',
@@ -17,19 +28,9 @@ fileTypes = (
 
 seasons = {}
 quality = {}
+count: int = 0
 
-
-def getlinks(cUrl):
-    html = urlopen(cUrl, context=ctx).read()
-    soup = bs(html, "html.parser")
-    return soup('a')
-
-
-def writelinks(parent, link):
-    f = open("links.txt", "a")
-    f.write(parent + link + "\n")
-    f.close()
-
+url = input('Enter target Url: ').strip()
 
 # get <a> tags from current page
 tags = getlinks(url)
@@ -56,7 +57,7 @@ while True:
             seasons = {key: val for key, val in seasons.items() if key in enteredseasons}  # keep wanted seasons only
             break
 
-for val in seasons.values():    # iterate through the selected seasons
+for val in seasons.values():  # iterate through the selected seasons
     count = 0
     tmpUrl = url
     tmpUrl += val
@@ -74,7 +75,7 @@ for val in seasons.values():    # iterate through the selected seasons
             continue
         count += 1
 
-        tmpQuality.append(link)     # list of available quality
+        tmpQuality.append(link)  # list of available quality
         print('\t({}) - Video Quality - {}'.format(count, link.strip('/')))
 
     # get input for video quality
@@ -90,7 +91,7 @@ for val in seasons.values():    # iterate through the selected seasons
                 tmpQuality = []
                 break
 
-for s, q in quality.items():                # s - season, q - quality
+for s, q in quality.items():  # s - season, q - quality
     tmpUrl = url + s + q
     tags = getlinks(tmpUrl)
 
@@ -99,8 +100,4 @@ for s, q in quality.items():                # s - season, q - quality
             continue
         writelinks(tmpUrl, tag.get('href', None))
 
-
-# quality selection completed
 print("All links scraped succesfully!")
-
-
