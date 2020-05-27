@@ -50,7 +50,7 @@ spidey = """      #######                          ##
  \)              ##                                    #####   ### 
                  ##                                  /#######  /#  
                   ##                                /      ###/    
-===================================================================="""
+====================================================================\n"""
 print(spidey)
 
 while True:
@@ -62,7 +62,7 @@ while True:
     except Exception:
         print('WARNING!!! Cannnot connect to the url!!!!')
     else:
-        print("Available Seasons:")
+        print("Available Seasons:\n")
         for tag in tags:
             if tag.get('href', None).lower().endswith(fileTypes):  # if already in file directory
                 writelinks(url, tag.get('href', None))
@@ -78,7 +78,7 @@ while True:
         while True:
             # exception value error
             try:
-                enteredseasons = list(map(str, input("Please select seasons you want(1,2,3,...): ").split(',')))
+                enteredseasons = list(map(str, input("\nPlease select seasons you want(1,2,3,...): ").split(',')))
             except ValueError:
                 print("Invalid input!")
             else:
@@ -95,7 +95,7 @@ while True:
             # get <a> in the page
             tags = getlinks(tmpUrl)
 
-            print('For season - {}'.format(val.strip('/')))
+            print('\nFor season - {}\n'.format(val.strip('/')))
 
             tmpQuality = []
             # request quality
@@ -112,7 +112,7 @@ while True:
             while True:
 
                 try:
-                    reqQuality = int(input("Please select Video Quality you want(1 or 2 or...): "))
+                    reqQuality = int(input("\nPlease select Video Quality you want(1 or 2 or...): "))
                 except ValueError:
                     print('Invalid Input!')
                 else:
